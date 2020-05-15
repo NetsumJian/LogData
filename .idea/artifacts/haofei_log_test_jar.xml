@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="haofei-log-test:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/haofei_log_test_jar</output-path>
+    <root id="archive" name="haofei-log-test.jar">
+      <element id="module-output" name="haofei-log-test" />
+    </root>
+  </artifact>
+</component>
