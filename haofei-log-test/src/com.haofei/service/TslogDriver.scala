@@ -8,7 +8,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 object TslogDriver {
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf()
-      .setMaster("local")
+      .setMaster("spark://hadoop3:7077")
       .setAppName("tslog")
       .set("spark.executor.memory", "4g")
     // val conf = new SparkConf().setMaster("local").setAppName("tslog")
@@ -19,7 +19,7 @@ object TslogDriver {
 
     // val path = "D:\\Document\\TestData\\part-0"
     val path = "hdfs://hadoop1:9000/har_tslog/reportTime="+yesterday+".har/part-0"
-    val data = sc.textFile(path)
+    val data = sc.textFile(path,10)
 
     val parsedata = data.filter( ! _.contains("\\|") )
       .map{ line =>

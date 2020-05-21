@@ -4,20 +4,17 @@ package com.haofei.service
 import java.net.URLDecoder
 
 import com.haofei.util.MysqlUtil
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 
 object MysqlDriver {
   def main(args: Array[String]): Unit = {
-    val conf = new SparkConf()
-      .setMaster("spark://hadoop3:7077")
-      .setAppName("HaoFeiLog")
-      .set("spark.executor.memory", "4g")
-    // val conf = new SparkConf().setMaster("local[5]").setAppName("localtest")
-    val sc = new SparkContext(conf)
+    val spark = SparkSession.builder.appName("mysql_log").getOrCreate
+    val sc = spark.sparkContext
 
-    val ssc = new StreamingContext(sc, Seconds(60))
+    val ssc = new StreamingContext(sc, Seconds(30))
     val zkHosts = "hadoop1:2181,hadoop2:2181,hadoop3:2181"
     val groupId = "hfmysql"
     val topics = Map("data_tslog" -> 2)
