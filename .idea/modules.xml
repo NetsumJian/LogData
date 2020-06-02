@@ -4,7 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/LogData.iml" filepath="$PROJECT_DIR$/LogData.iml" />
       <module fileurl="file://$PROJECT_DIR$/data-checking/data-checking.iml" filepath="$PROJECT_DIR$/data-checking/data-checking.iml" />
-      <module fileurl="file://$PROJECT_DIR$/haofei-log-manage-1.0/haofei-log-manage-1.0.iml" filepath="$PROJECT_DIR$/haofei-log-manage-1.0/haofei-log-manage-1.0.iml" />
+      <module fileurl="file://$PROJECT_DIR$/haofei-log-manage/haofei-log-manage.iml" filepath="$PROJECT_DIR$/haofei-log-manage/haofei-log-manage.iml" />
       <module fileurl="file://$PROJECT_DIR$/haofei-log-test/haofei-log-test.iml" filepath="$PROJECT_DIR$/haofei-log-test/haofei-log-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/machine-learning/machine-learning.iml" filepath="$PROJECT_DIR$/machine-learning/machine-learning.iml" />
     </modules>

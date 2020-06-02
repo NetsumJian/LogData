@@ -1,13 +1,12 @@
-package com.haofei.util
+package com.haofei.utils
 
 import java.sql.{Connection, PreparedStatement, ResultSet, Statement}
 
 import com.haofei.domain.DataSourceTrait
-import javax.sql.DataSource
 
 import scala.collection.mutable
 
-object MysqlUtil {
+object MysqlUtil2 {
 
   // 数据保存 -> MySQL
   def saveToMysql(sqls: Array[String],ds:DataSourceTrait) = {
@@ -61,9 +60,8 @@ object MysqlUtil {
 
     // 查询该数据库的所有表结构, 表名 : 表字段
     val sql = "select t1.TABLE_NAME as tableName,t1.COLUMN_NAME as columnName " +
-      "from information_schema.`COLUMNS` t1 where t1.TABLE_NAME in ( " +
-      "select t.TABLE_NAME from information_schema.`COLUMNS`  t where t.TABLE_SCHEMA = '" + dataBase +
-      "' and  t.COLUMN_NAME = 'pid') order by t1.TABLE_NAME,t1.ORDINAL_POSITION"
+      "from information_schema.`COLUMNS` t1 where t1.TABLE_SCHEMA = '" + dataBase + "'" +
+      "order by t1.TABLE_NAME"
 
     var conn: Connection = null
     var ps: PreparedStatement = null

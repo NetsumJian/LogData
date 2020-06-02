@@ -1,4 +1,4 @@
-package com.haofei.util
+package com.haofei.utils
 
 import java.net.URLDecoder
 
@@ -9,7 +9,7 @@ import scala.collection.mutable
 object RddUtil {
   def rddToSql(rdd:RDD[String],tableMap:mutable.HashMap[String,Array[String]]): RDD[String] ={
     // 数据过滤解析 -> 去除异常数据
-    val parsedata = rdd.filter(_.matches("\\w+\\|.*"))
+    val parsedata = rdd
       .map(_.split("\\|"))
       .sortBy(_ (0))
     // 数据处理 Array[String] -> sql语句
@@ -19,11 +19,12 @@ object RddUtil {
         val tableName = arr(0)
         val columnArray = tableMap(tableName)
         var str = ""
-        for (i <- 0 until arr.size) {
+        val size = if ( arr.size-1 > columnArray.size ) columnArray.size else arr.size-1
+        for (i <- 0 until size +1 ) {
           if (i == 0) {
             // insert into guess_server_record_flow(
             str = "insert into " + tableName + "("
-            for (j <- 0 until columnArray.size){
+            for (j <- 0 until size){
               // `event_time`,`room_type`,`room_id`,`stage`,`red_cards`,`blue_cards`,`red_result`,`blue_result`
               str = str + "`" + columnArray(j) + "`,"
             }
