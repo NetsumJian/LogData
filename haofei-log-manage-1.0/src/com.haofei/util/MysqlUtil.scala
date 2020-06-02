@@ -1,55 +1,48 @@
 package com.haofei.util
 
 import java.sql.{Connection, PreparedStatement, ResultSet, Statement}
-import com.haofei.domain.MysqlDataSource
+
+import com.haofei.domain.DataSourceTrait
+import javax.sql.DataSource
+
 import scala.collection.mutable
 
 object MysqlUtil {
 
   // 数据保存 -> MySQL
-  def saveToMysql(sqls: Array[String]) = {
+  def saveToMysql(sqls: Array[String],ds:DataSourceTrait) = {
     var conn: Connection = null
     var stat: Statement = null
-    var num = 0
     var nowTable = ""
     var nextTable = ""
-    // val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    val time = System.currentTimeMillis()/1000
+    val arrays = new mutable.ArrayBuffer[String]
     try {
-      conn = MysqlDataSource.getConnection()
+      conn = ds.getConnection()
       stat = conn.createStatement()
       for (i <- 0 until sqls.size) {
         stat.addBatch(sqls(i))
-        num += 1
+        arrays.append(sqls(i))
         if ( i + 1 < sqls.size){
           nowTable = sqls(i).substring(12, sqls(i).indexOf("("))
           nextTable = sqls(i + 1).substring(12, sqls(i + 1).indexOf("("))
         }
-        if ( nowTable != nextTable ) {
+        if ( nowTable != nextTable || arrays.size > 1000 ) {
           try {
             stat.executeBatch()
             stat.clearBatch()
-            // 成功执行多少条数据
-            println(time + "|"+nowTable+"|"+num+ "|1")
-            num = 0
+            arrays.clear()
           } catch {
             case e: Exception => {
-              // 执行错误
-              println(sqls(i))
-              println(time + "|"+nowTable+"|"+num+ "|0")
-              num = 0
+              arrays.foreach(println)
               e.printStackTrace()
             }
           }
         }
       }
       stat.executeBatch()
-      println(time + "|"+nowTable+"|"+num+ "|1")
-      num = 0
     } catch {
       case e: Exception => {
-        println(time + "|"+nowTable+"|"+num+ "|0")
-        num = 0
+        arrays.foreach(println)
         e.printStackTrace()
       }
     } finally {
@@ -59,7 +52,7 @@ object MysqlUtil {
   }
 
   // 获取对应数据库所有表结构 -> Map(key:表名,value:所有字段)
-  def getTableMap(dataBase: String): mutable.HashMap[String, Array[String]] = {
+  def getTableMap(dataBase: String,ds:DataSourceTrait): mutable.HashMap[String, Array[String]] = {
     val tableMap = new mutable.HashMap[String, Array[String]]
     val mutableArray = new mutable.ArrayBuffer[String]()
     var lastTableName = ""
@@ -77,7 +70,7 @@ object MysqlUtil {
     var rs: ResultSet = null
 
     try {
-      conn = MysqlDataSource.getConnection()
+      conn = ds.getConnection()
       ps = conn.prepareStatement(sql)
       rs = ps.executeQuery()
       while (rs.next()) {
@@ -107,5 +100,4 @@ object MysqlUtil {
     }
     tableMap
   }
-
 }

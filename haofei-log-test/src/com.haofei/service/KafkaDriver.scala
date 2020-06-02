@@ -12,9 +12,9 @@ object KafkaDriver {
     val sc = new SparkContext(conf)
 
     val ssc = new StreamingContext(sc,Seconds(5))
-    val zkHosts = "test01:2181"
-    val groupId = "kafka1910"
-    val topics = Map("weblog"-> 2)
+    val zkHosts = "192.168.1.225:2181"
+    val groupId = "test01"
+    val topics = Map("weblog" -> 2)
     val kafkaSource = KafkaUtils.createStream(ssc,zkHosts,groupId,topics).map(_._2)
     kafkaSource.print()
     // http://localhost:8080/FluxAppServer/a.jsp|a.jsp|页面A|UTF-8

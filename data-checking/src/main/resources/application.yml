@@ -1,0 +1,16 @@
+server:
+  port: 7395
+
+spring:
+  application:
+    name: data-checking
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://rm-wz919h3957zsehk2p.mysql.rds.aliyuncs.com:3306/data_tslog?useSSL=false&serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
+    username: hf_root
+    password: T+o7eyalZqUAWf8sFAZPSFs5plQ=
+  sxgf-datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://rr-wz9c49ix31y3ds761.mysql.rds.aliyuncs.com:3306/data_tslog?useSSL=false&serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
+    username: sx_bio_readuser
+    password: I+GVsjdIqF18kp5aXtDLpQ8G5kc=

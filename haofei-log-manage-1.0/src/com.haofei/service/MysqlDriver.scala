@@ -1,67 +1,74 @@
 package com.haofei.service
 
+import java.text.SimpleDateFormat
 
-import java.net.URLDecoder
-
-import com.haofei.util.MysqlUtil
+import com.haofei.domain.{SXGFDataSource, SXQDDataSource, TTGFDataSource, TTQDDataSource}
+import com.haofei.util.{MysqlUtil, RddUtil}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-import org.apache.spark.{SparkConf, SparkContext}
 
 object MysqlDriver {
   def main(args: Array[String]): Unit = {
-    val spark = SparkSession.builder.appName("mysql_log").getOrCreate
+    val spark = SparkSession.builder
+      .appName("mysqlApp")
+      .config("spark.streaming.concurrentJobs", "4")
+      .getOrCreate
     val sc = spark.sparkContext
-
     val ssc = new StreamingContext(sc, Seconds(30))
+
+    val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
     val zkHosts = "hadoop1:2181,hadoop2:2181,hadoop3:2181"
-    val groupId = "hfmysql"
-    val topics = Map("data_tslog" -> 2)
-    val kafkaSource = KafkaUtils.createStream(ssc, zkHosts, groupId, topics).map(_._2)
 
-    val dataBase = "data_tslog"
-    val tableMap = MysqlUtil.getTableMap(dataBase)
+    // 手心渠道配置及业务逻辑处理
+    val sxqdTopic = Map("sxqd_tslog" -> 3)
+    val sxqdSource = KafkaUtils.createStream(ssc, zkHosts, "sxqd", sxqdTopic).map(_._2)
 
-    kafkaSource.foreachRDD { rdd =>
-      // 数据过滤解析 -> 去除异常数据
-      val parsedata = rdd.filter(_.matches("\\w+\\|.*"))
-        .map(_.split("\\|"))
-        .sortBy(_ (0))
-      // 数据处理 Array[String] -> sql语句
-      val sqldata = parsedata
-        .filter(a => tableMap.contains(a(0)))
-        .map { arr =>
-          val tableName = arr(0)
-          val columnArray = tableMap(tableName)
-          var str = ""
-          for (i <- 0 until arr.size) {
-            if (i == 0) {
-              // insert into guess_server_record_flow(
-              str = "insert into " + tableName + "("
-              for (j <- 0 until columnArray.size){
-                // `event_time`,`room_type`,`room_id`,`stage`,`red_cards`,`blue_cards`,`red_result`,`blue_result`
-                str = str + "`" + columnArray(j) + "`,"
-              }
-              // ) values (
-              str = str.dropRight(1) + ") values ("
-            }
-            else
-              // '1586844573','1','131','1586844573','[6,7,8,8,9]','[1,1,1,1,10]','-4','4'
-              str = str + "'" + arr(i) + "',"
-          }
-          // );
-          str = str.dropRight(1) + ");"
-          // insert into guess_server_record_flow(
-          // `event_time`,`room_type`,`room_id`,`stage`,`red_cards`,`blue_cards`,`red_result`,`blue_result`
-          // ) values (
-          // '1586844573','1','131','1586844573','[6,7,8,8,9]','[1,1,1,1,10]','-4','4');
-          URLDecoder.decode(str,"utf-8")
-      }
-      MysqlUtil.saveToMysql(sqldata.collect)
-      // println("总计:"+sqldata.count)
+    val sxqdMap = MysqlUtil.getTableMap("sxqd_tslog",SXQDDataSource)
+
+    sxqdSource.foreachRDD { rdd =>
+      val sqldata = RddUtil.rddToSql(rdd,sxqdMap)
+      MysqlUtil.saveToMysql(sqldata.collect,SXQDDataSource)
+      println(sdf.format(System.currentTimeMillis)+"|sxqd_tslog|"+sqldata.count)
     }
 
+    // 手心官方配置及业务逻辑处理
+    val sxgfTopic = Map("sxgf_tslog" -> 3)
+    val sxgfSource = KafkaUtils.createStream(ssc, zkHosts, "sxgf", sxgfTopic).map(_._2)
+
+    val sxgfMap = MysqlUtil.getTableMap("sxgf_tslog",SXQDDataSource)
+
+    sxgfSource.foreachRDD { rdd =>
+      val sqldata = RddUtil.rddToSql(rdd,sxgfMap)
+      MysqlUtil.saveToMysql(sqldata.collect,SXGFDataSource)
+      println(sdf.format(System.currentTimeMillis)+"|sxgf_tslog|"+sqldata.count)
+    }
+
+    // 天天渠道配置及业务逻辑处理
+    val ttqdTopic = Map("ttqd_tslog" -> 3)
+    val ttqdSource = KafkaUtils.createStream(ssc, zkHosts, "ttqd", ttqdTopic).map(_._2)
+
+    val ttqdMap = MysqlUtil.getTableMap("ttqd_tslog",SXQDDataSource)
+
+    ttqdSource.foreachRDD { rdd =>
+      val sqldata = RddUtil.rddToSql(rdd,ttqdMap)
+      MysqlUtil.saveToMysql(sqldata.collect,TTQDDataSource)
+      println(sdf.format(System.currentTimeMillis)+"|ttqd_tslog|"+sqldata.count)
+    }
+
+    // 天天官方配置及业务逻辑处理
+    val ttgfTopic = Map("ttgf_tslog" -> 3)
+    val ttgfSource = KafkaUtils.createStream(ssc, zkHosts, "ttgf", ttgfTopic).map(_._2)
+
+    val ttgfMap = MysqlUtil.getTableMap("ttgf_tslog",SXQDDataSource)
+
+    ttgfSource.foreachRDD { rdd =>
+      val sqldata = RddUtil.rddToSql(rdd,ttgfMap)
+      MysqlUtil.saveToMysql(sqldata.collect,TTGFDataSource)
+      println(sdf.format(System.currentTimeMillis)+"|ttgf_tslog|"+sqldata.count)
+    }
+
+    // 启动实时流
     ssc.start()
     ssc.awaitTermination()
 
