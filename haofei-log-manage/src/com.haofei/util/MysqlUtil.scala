@@ -11,15 +11,16 @@ object MysqlUtil {
   // 数据保存 -> MySQL
   def saveToMysql(sqls: Array[String],ds:DataSourceTrait) = {
     var conn: Connection = null
-    var stat: Statement = null
+    var ps: PreparedStatement = null
     var nowTable = ""
     var nextTable = ""
     val arrays = new mutable.ArrayBuffer[String]
     try {
       conn = ds.getConnection()
-      stat = conn.createStatement()
+      ps = conn.prepareStatement("set names utf8mb4")
+      ps.execute()
       for (i <- 0 until sqls.size) {
-        stat.addBatch(sqls(i))
+        ps.addBatch(sqls(i))
         arrays.append(sqls(i))
         if ( i + 1 < sqls.size){
           nowTable = sqls(i).substring(12, sqls(i).indexOf("("))
@@ -27,25 +28,27 @@ object MysqlUtil {
         }
         if ( nowTable != nextTable || arrays.size > 1000 ) {
           try {
-            stat.executeBatch()
-            stat.clearBatch()
+            ps.executeBatch()
+            ps.clearBatch()
             arrays.clear()
           } catch {
             case e: Exception => {
               arrays.foreach(println)
+              println(ds.getClass + " : " + e.getMessage)
               e.printStackTrace()
             }
           }
         }
       }
-      stat.executeBatch()
+      ps.executeBatch()
     } catch {
       case e: Exception => {
         arrays.foreach(println)
+        println(ds.getClass + " : " + e.getMessage)
         e.printStackTrace()
       }
     } finally {
-      if (stat != null) stat.close()
+      if (ps != null) ps.close()
       if (conn != null) conn.close()
     }
   }
@@ -83,12 +86,12 @@ object MysqlUtil {
         if (!columnName.equals("pid")) {
           mutableArray.append(columnName)
         }
-
         lastTableName = tableName
       }
       tableMap.put(tableName,mutableArray.toArray)
     } catch {
       case e: Exception => {
+        println(ds.getClass + " : " + e.getMessage)
         e.printStackTrace()
       }
     } finally {

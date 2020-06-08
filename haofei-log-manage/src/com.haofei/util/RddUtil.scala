@@ -41,7 +41,12 @@ object RddUtil {
         // `event_time`,`room_type`,`room_id`,`stage`,`red_cards`,`blue_cards`,`red_result`,`blue_result`
         // ) values (
         // '1586844573','1','131','1586844573','[6,7,8,8,9]','[1,1,1,1,10]','-4','4');
-        URLDecoder.decode(str,"utf-8")
+        try {
+          str = URLDecoder.decode(str, "utf-8")
+        } catch {
+          case e => e.printStackTrace()
+        }
+        str
       }
     sqldata
   }

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="haofei-local-task:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/haofei_local_task_jar</output-path>
+    <root id="archive" name="haofei-local-task.jar">
+      <element id="module-output" name="haofei-local-task" />
+    </root>
+  </artifact>
+</component>

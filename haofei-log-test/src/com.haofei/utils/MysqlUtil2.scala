@@ -33,6 +33,7 @@ object MysqlUtil2 {
           } catch {
             case e: Exception => {
               arrays.foreach(println)
+              println(ds.getClass+e.getMessage)
               e.printStackTrace()
             }
           }
@@ -57,6 +58,7 @@ object MysqlUtil2 {
     var lastTableName = ""
     var tableName = ""
     var columnName = ""
+    println(ds.getClass)
 
     // 查询该数据库的所有表结构, 表名 : 表字段
     val sql = "select t1.TABLE_NAME as tableName,t1.COLUMN_NAME as columnName " +

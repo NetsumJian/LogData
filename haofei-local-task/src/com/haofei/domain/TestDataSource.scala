@@ -8,7 +8,7 @@ case object TestDataSource extends DataSourceTrait {
   val c3p0 = new ComboPooledDataSource()
 
   val driverClass = "com.mysql.jdbc.Driver"
-  val jdbcUrl = "jdbc:mysql://192.168.1.162:3306/data_tslog?useSSL=false&useUnicode=true&characterEncoding=UTF-8&connectTimeout=3000"
+  val jdbcUrl = "jdbc:mysql://192.168.1.162:3306/data_bi_pay_value?useSSL=false&useUnicode=true&characterEncoding=UTF-8&connectTimeout=3000"
   val user = "root"
   val password = "MvMVoAFLVI9mAznX"
 

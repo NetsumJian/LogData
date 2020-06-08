@@ -6,7 +6,7 @@ spring:
     name: data-checking
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://rm-wz919h3957zsehk2p.mysql.rds.aliyuncs.com:3306/data_tslog?useSSL=false&serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://rm-wz919h3957zsehk2p.mysql.rds.aliyuncs.com:3306/sxgf_tslog?useSSL=false&serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
     username: hf_root
     password: T+o7eyalZqUAWf8sFAZPSFs5plQ=
   sxgf-datasource:

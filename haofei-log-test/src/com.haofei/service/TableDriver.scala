@@ -8,10 +8,9 @@ object TableDriver {
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf().setMaster("local").setAppName("hiveSql")
     val sc = new SparkContext(conf)
-
-    val tableMap = MysqlUtil2.getTableMap("data_tslog",TestDataSource)
+    val broad = sc.broadcast(Array(TestDataSource))
+    val tableMap = MysqlUtil2.getTableMap("data_tslog",broad.value(0))
     tableMap.foreach{x=>
-
       println(x._1 + " : " +x._2.mkString(","))
     }
     /*val hiveSql = tableMap.map{ x =>
@@ -21,6 +20,7 @@ object TableDriver {
     }.toArray
     // hiveSql.sorted
     sc.makeRDD(hiveSql.sorted).saveAsTextFile("D://hivesql")*/
+
   }
 
 }

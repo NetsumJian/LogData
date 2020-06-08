@@ -34,7 +34,7 @@ public class DataCtrl {
             try {
                 tableName = tableList[new Random().nextInt(tableList.length)];
                 System.out.println(tableName + " | " + dataService.getTableCount(tableName));
-                System.out.println(dataService.getRowData(tableName).toString());
+                // System.out.println(dataService.getRowData(tableName).toString());
             } catch (Exception e) {
                 e.printStackTrace();
             }
