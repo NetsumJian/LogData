@@ -1,6 +1,11 @@
 package com.haofei.machine
 
-import com.haofei.domain.TestDataSource
+import java.text.SimpleDateFormat
+
+import com.haofei.domain.{LocalDataSource, TestDataSource}
+import com.haofei.utils.SqlUtil
+import org.apache.spark.ml.classification.LogisticRegression
+import org.apache.spark.ml.feature.{StringIndexer, VectorAssembler}
 import org.apache.spark.sql.SparkSession
 
 import scala.collection.mutable
@@ -13,59 +18,50 @@ object LostPlayerDriver {
       .getOrCreate()
 
     val conn = TestDataSource.getConnection()
-    val ps = conn.prepareStatement(
-      """
-        |SELECT t1.a,t1.v,t1.f,t1.c,t1.o,IF(t2.account_id IS NULL,1,0)
-        |FROM (
-        |SELECT t.account_id a , max(t.vip) v ,max(t.factor) f , COUNT(1) c ,AVG(t.online_time) o
-        |FROM (
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-06`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-07`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-08`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-09`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-10`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-11`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-12`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-13`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-14`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-15`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-16`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020a-05-17`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-18`
-        |UNION ALL
-        |SELECT account_id,vip,register_time,factor,online_time FROM `active_player2020-05-19`
-        |) t
-        |WHERE t.register_time < UNIX_TIMESTAMP('2020-05-06')
-        |GROUP BY t.account_id ) t1
-        |LEFT JOIN data_tslog.login_flow t2 ON t1.a = t2.account_id
-        |AND t2.event_time BETWEEN UNIX_TIMESTAMP('2020-05-20') AND UNIX_TIMESTAMP('2020-06-05')
-        |GROUP BY t1.a
-        |ORDER BY t1.a
-        |""".stripMargin)
-    val rs = ps.executeQuery()
-    val arr = new mutable.ArrayBuffer[(String,String,String,String,String)]()
-    while (rs.next()){
-      val id = rs.getString(1)
-      val vip = rs.getString(2)
-      val factor = rs.getString(3)
-      val nums = rs.getString(4)
-      val times = rs.getString(5)
-      arr.append((id,vip,factor,nums,times))
+    val traintSql = SqlUtil.getTraintSql()
+    val ps = conn.prepareStatement(traintSql)
+    val traintRS = ps.executeQuery()
+    val traintArray = new mutable.ArrayBuffer[(Int,Int,Int,Double,Double,Double)]()
+    while (traintRS.next()){
+      val id = traintRS.getInt("id")
+      val vip = traintRS.getInt("vip")
+      val factor = traintRS.getInt("factor")
+      val nums = traintRS.getInt("nums")
+      val atime = traintRS.getDouble("atime")
+      val la = traintRS.getInt("la")
+      traintArray.append((id,vip,factor,nums,atime,la))
     }
-    arr.take(10).foreach(println)
+    val traintDF = spark.createDataFrame(traintArray).toDF("id","vip","factor","nums","atime","la")
 
+    val vectorDf = new VectorAssembler().setInputCols(Array("nums","atime")).setOutputCol("features").transform(traintDF)
+
+    val indexDf = new StringIndexer().setInputCol("la").setOutputCol("label").fit(vectorDf).transform(vectorDf)
+
+    val logisticModel = new LogisticRegression()
+      .setMaxIter(20)
+      .setWeightCol("nums")
+      .fit(indexDf)
+
+    val testSql = SqlUtil.getPredictSql()
+    val testRS = ps.executeQuery(testSql)
+    val testArray = new mutable.ArrayBuffer[(Int,Int,Int,Double,Double)]()
+    while (testRS.next()){
+      val id = testRS.getInt("id")
+      val vip = testRS.getInt("vip")
+      val factor = testRS.getInt("factor")
+      val nums = testRS.getInt("nums")
+      val atime = testRS.getDouble("atime")
+      testArray.append((id,vip,factor,nums,atime))
+    }
+    val testDF = spark.createDataFrame(testArray).toDF("id","vip","factor","nums","atime")
+    val testVector = new VectorAssembler().setInputCols(Array("nums","atime")).setOutputCol("features").transform(testDF)
+    val predictDF = logisticModel.transform(testVector)
+    val sdf = new SimpleDateFormat("yyyy-MM-dd")
+    val today = sdf.format(System.currentTimeMillis())
+    predictDF.take(10).foreach{row =>
+      val sql = s"insert into lostplayer values(null,'${row(0)}','${System.currentTimeMillis()/1000}','$today','${row(1)}','${row(2)}','${row(3)}','${row(4)}','${row(8)}')"
+      println(sql)
+      ps.execute(sql)
+    }
   }
-
 }

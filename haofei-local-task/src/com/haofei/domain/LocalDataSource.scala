@@ -8,7 +8,7 @@ case object LocalDataSource extends DataSourceTrait {
   val c3p0 = new ComboPooledDataSource()
 
   val driverClass = "com.mysql.jdbc.Driver"
-  val jdbcUrl = "jdbc:mysql:///data_tslog?useSSL=false&useUnicode=true&characterEncoding=UTF-8&connectTimeout=3000"
+  val jdbcUrl = "jdbc:mysql:///data_bi_pay_value?useSSL=false&useUnicode=true&characterEncoding=UTF-8&connectTimeout=3000"
   val user = "root"
   val password = "root"
 

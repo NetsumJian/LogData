@@ -14,18 +14,19 @@ object LogisticDriver {
     val sc = spark.sparkContext
     val sqc = spark.sqlContext
 
-    val traintData = sc.textFile("E:\\datawork\\traint.csv")
+    val traintData = sc.textFile("E:\\datawork\\traint.txt")
     val parseData = traintData.map{line =>
       val arr = line.split(",")
       val id = arr(0)
       val vip = arr(1).toDouble
       val factor = arr(2).toDouble
       val nums = arr(3).toDouble
-      val time = arr(4).toDouble/60
-      val la = arr(5).toDouble
-      (id,vip,factor,nums,time,la)
+      val time = arr(4).toDouble
+      val fire = arr(5).toDouble
+      val la = arr(6).toDouble
+      (id,vip,factor,nums,time,fire,la)
     }
-    val df = sqc.createDataFrame(parseData).toDF("id","vip","factor","nums","time","la")
+    val df = sqc.createDataFrame(parseData).toDF("id","vip","factor","nums","time","fire","la")
     // df.show()
 
     val vectorDf = new VectorAssembler().setInputCols(Array("nums","time")).setOutputCol("features").transform(df)
