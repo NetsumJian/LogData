@@ -13,7 +13,7 @@ object LogisticDriver {
     val sc = spark.sparkContext
     val sqc = spark.sqlContext
 
-    val traintData = sc.textFile("E:\\datawork\\traint.csv")
+    val traintData = sc.textFile("E:\\datawork\\202005\\traint.csv")
     val parseData = traintData.map{line =>
       val arr = line.split(",")
       val id = arr(0)
@@ -39,6 +39,7 @@ object LogisticDriver {
       .fit(indexDf)
 
     val checkData = logisticModel.transform(indexDf)
+
 //    checkData.toJavaRDD.saveAsTextFile("E:\\datawork\\prediction")
     checkData.show()
     for ( i <- 0 until 10 ){

@@ -44,7 +44,13 @@ object RddUtil {
         try {
           str = URLDecoder.decode(str, "utf-8")
         } catch {
-          case e => e.printStackTrace()
+          case e => {
+            EmailUtil.sendSimpleTextEmail("数据解码异常",
+              s"""源数据 : $str
+                 |异常原因 : ${e.getMessage}
+                 |${e.getStackTrace.mkString("\n")}
+                 |""".stripMargin)
+          }
         }
         str
       }

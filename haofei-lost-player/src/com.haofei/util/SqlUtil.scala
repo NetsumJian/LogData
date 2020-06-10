@@ -1,4 +1,4 @@
-package com.haofei.utils
+package com.haofei.util
 
 import java.util
 

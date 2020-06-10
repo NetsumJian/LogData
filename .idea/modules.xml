@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/haofei-local-task/haofei-local-task.iml" filepath="$PROJECT_DIR$/haofei-local-task/haofei-local-task.iml" />
       <module fileurl="file://$PROJECT_DIR$/haofei-log-manage/haofei-log-manage.iml" filepath="$PROJECT_DIR$/haofei-log-manage/haofei-log-manage.iml" />
       <module fileurl="file://$PROJECT_DIR$/haofei-log-test/haofei-log-test.iml" filepath="$PROJECT_DIR$/haofei-log-test/haofei-log-test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/haofei-lost-player/haofei-lost-player.iml" filepath="$PROJECT_DIR$/haofei-lost-player/haofei-lost-player.iml" />
       <module fileurl="file://$PROJECT_DIR$/machine-learning/machine-learning.iml" filepath="$PROJECT_DIR$/machine-learning/machine-learning.iml" />
     </modules>
   </component>

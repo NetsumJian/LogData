@@ -1,12 +1,10 @@
 package com.haofei.util
 
-import java.sql.{Connection, PreparedStatement, ResultSet, Statement}
-
+import java.sql.{Connection, PreparedStatement, ResultSet}
 import com.haofei.domain.DataSourceTrait
-
 import scala.collection.mutable
 
-object MysqlUtil {
+object JdbcUtil {
 
   // 数据保存 -> MySQL
   def saveToMysql(sqls: Array[String],ds:DataSourceTrait) = {
@@ -34,8 +32,12 @@ object MysqlUtil {
           } catch {
             case e: Exception => {
               arrays.foreach(println)
-              println(ds.getClass + " : " + e.getMessage)
-              e.printStackTrace()
+              EmailUtil.sendSimpleTextEmail("Mysql数据入库异常",
+                s"""数据库 : ${ds.getClass}
+                   |数据 : ${arrays(0)}
+                   |异常原因 : ${e.getMessage}
+                   |${e.getStackTrace.mkString("\n")}
+                   |""".stripMargin)
             }
           }
         }
@@ -44,8 +46,12 @@ object MysqlUtil {
     } catch {
       case e: Exception => {
         arrays.foreach(println)
-        println(ds.getClass + " : " + e.getMessage)
-        e.printStackTrace()
+        EmailUtil.sendSimpleTextEmail("Mysql数据入库异常",
+          s"""数据库 : ${ds.getClass}
+             |数据 : ${arrays(0)}
+             |异常原因 : ${e.getMessage}
+             |${e.getStackTrace.mkString("\n")}
+             |""".stripMargin)
       }
     } finally {
       if (ps != null) ps.close()
@@ -91,8 +97,11 @@ object MysqlUtil {
       tableMap.put(tableName,mutableArray.toArray)
     } catch {
       case e: Exception => {
-        println(ds.getClass + " : " + e.getMessage)
-        e.printStackTrace()
+        EmailUtil.sendSimpleTextEmail("Mysql获取表结构异常",
+          s"""数据库 : ${ds.getClass}
+             |异常原因 : ${e.getMessage}
+             |${e.getStackTrace.mkString("\n")}
+             |""".stripMargin)
       }
     } finally {
       if (rs != null) rs.close()
@@ -101,4 +110,5 @@ object MysqlUtil {
     }
     tableMap
   }
+
 }
