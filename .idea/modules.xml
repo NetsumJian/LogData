@@ -4,6 +4,10 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/LogData.iml" filepath="$PROJECT_DIR$/LogData.iml" />
       <module fileurl="file://$PROJECT_DIR$/data-checking/data-checking.iml" filepath="$PROJECT_DIR$/data-checking/data-checking.iml" />
+      <module fileurl="file://$PROJECT_DIR$/haofei-hbase-manage/haofei-hbase-manage.iml" filepath="$PROJECT_DIR$/haofei-hbase-manage/haofei-hbase-manage.iml" />
+      <module fileurl="file://$PROJECT_DIR$/haofei-hbase-test/haofei-hbase-test.iml" filepath="$PROJECT_DIR$/haofei-hbase-test/haofei-hbase-test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/haofei-hive-test/haofei-hive-test.iml" filepath="$PROJECT_DIR$/haofei-hive-test/haofei-hive-test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/haofei-hive-tslog/haofei-hive-tslog.iml" filepath="$PROJECT_DIR$/haofei-hive-tslog/haofei-hive-tslog.iml" />
       <module fileurl="file://$PROJECT_DIR$/haofei-local-task/haofei-local-task.iml" filepath="$PROJECT_DIR$/haofei-local-task/haofei-local-task.iml" />
       <module fileurl="file://$PROJECT_DIR$/haofei-log-manage/haofei-log-manage.iml" filepath="$PROJECT_DIR$/haofei-log-manage/haofei-log-manage.iml" />
       <module fileurl="file://$PROJECT_DIR$/haofei-log-test/haofei-log-test.iml" filepath="$PROJECT_DIR$/haofei-log-test/haofei-log-test.iml" />

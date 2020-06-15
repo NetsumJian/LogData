@@ -13,19 +13,19 @@ object TslogDriver {
 
     val yesterday = new SimpleDateFormat("yyyy-MM-dd")
       .format(new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000))
-    // val yesterday = "2020-04-30"
 
     val path = "hdfs://hadoop1:9000/sxqd_tslog/reportTime=" + yesterday
     val data = sc.wholeTextFiles(path,20).map(_._2).flatMap(_.split("\n"))
 
     val parsedata = data
-      .filter(_.matches("[a-z_]|.*"))
+      .filter(_.matches("^([a-z]+_)+[a-z]+\\|.*"))
       .map { line =>
         val fileName = line.substring(0, line.indexOf("|"))
         val lineData = line.substring(line.indexOf("|") + 1)
         (fileName, lineData)
       }
       .groupByKey
+    parsedata.persist()
 
     val fileNames = parsedata.map(_._1).collect
     val fileDatas = parsedata.map(_._2.toArray).collect

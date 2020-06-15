@@ -10,11 +10,19 @@ object RddUtil {
   def rddToSql(rdd:RDD[String],tableMap:mutable.HashMap[String,Array[String]]): RDD[String] ={
     // 数据过滤解析 -> 去除异常数据
     val parsedata = rdd
-      .map(_.split("\\|"))
-      .sortBy(_ (0))
+      .filter{line => line.matches("^([a-z]+_)+[a-z]+\\|.*") && tableMap.contains(line.substring(0,line.indexOf("|")))}
+      .map{line =>
+        var str = line
+        if (str.contains("'")){
+          EmailUtil.sendSimpleTextEmail("特殊字符",str)
+          str = str.replace("'","\\'")
+        }
+        str.split("\\|")
+      }
+      .sortBy(_(0))
+    parsedata.persist()
     // 数据处理 Array[String] -> sql语句
     val sqldata = parsedata
-      .filter(a => tableMap.contains(a(0)))
       .map { arr =>
         val tableName = arr(0)
         val columnArray = tableMap(tableName)
@@ -44,8 +52,9 @@ object RddUtil {
         try {
           str = URLDecoder.decode(str, "utf-8")
         } catch {
-          case e => {
-            EmailUtil.sendSimpleTextEmail("数据解码异常",
+          case e:Exception => {
+            e.printStackTrace
+            EmailUtil.sendSimpleTextEmail("URLDecoder解码异常",
               s"""源数据 : $str
                  |异常原因 : ${e.getMessage}
                  |${e.getStackTrace.mkString("\n")}
@@ -54,6 +63,7 @@ object RddUtil {
         }
         str
       }
+    parsedata.unpersist()
     sqldata
   }
 }

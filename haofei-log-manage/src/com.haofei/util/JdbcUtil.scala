@@ -1,11 +1,15 @@
 package com.haofei.util
 
 import java.sql.{Connection, PreparedStatement, ResultSet}
+
 import com.haofei.domain.DataSourceTrait
+import org.slf4j.LoggerFactory
+
 import scala.collection.mutable
 
 object JdbcUtil {
 
+  val logger = LoggerFactory.getLogger(JdbcUtil.getClass)
   // 数据保存 -> MySQL
   def saveToMysql(sqls: Array[String],ds:DataSourceTrait) = {
     var conn: Connection = null
@@ -31,12 +35,23 @@ object JdbcUtil {
             arrays.clear()
           } catch {
             case e: Exception => {
-              arrays.foreach(println)
+              val msg = e.getMessage
+              val c = ds.getClass.toString
+              val stackTrace = e.getStackTrace.mkString("\n")
+
+              arrays.foreach{s =>
+                logger.error(s)
+              }
+
+              logger.error(c)
+              logger.error(msg)
+              logger.error(stackTrace)
+
               EmailUtil.sendSimpleTextEmail("Mysql数据入库异常",
-                s"""数据库 : ${ds.getClass}
+                s"""数据库 : $c
                    |数据 : ${arrays(0)}
-                   |异常原因 : ${e.getMessage}
-                   |${e.getStackTrace.mkString("\n")}
+                   |异常原因 : $msg
+                   |$stackTrace
                    |""".stripMargin)
             }
           }
@@ -45,12 +60,23 @@ object JdbcUtil {
       ps.executeBatch()
     } catch {
       case e: Exception => {
-        arrays.foreach(println)
+        val msg = e.getMessage
+        val c = ds.getClass.toString
+        val stackTrace = e.getStackTrace.mkString("\n")
+
+        arrays.foreach{s =>
+          logger.error(s)
+        }
+
+        logger.error(c)
+        logger.error(msg)
+        logger.error(stackTrace)
+
         EmailUtil.sendSimpleTextEmail("Mysql数据入库异常",
-          s"""数据库 : ${ds.getClass}
+          s"""数据库 : $c
              |数据 : ${arrays(0)}
-             |异常原因 : ${e.getMessage}
-             |${e.getStackTrace.mkString("\n")}
+             |异常原因 : $msg
+             |$stackTrace
              |""".stripMargin)
       }
     } finally {
@@ -97,6 +123,7 @@ object JdbcUtil {
       tableMap.put(tableName,mutableArray.toArray)
     } catch {
       case e: Exception => {
+        e.printStackTrace()
         EmailUtil.sendSimpleTextEmail("Mysql获取表结构异常",
           s"""数据库 : ${ds.getClass}
              |异常原因 : ${e.getMessage}

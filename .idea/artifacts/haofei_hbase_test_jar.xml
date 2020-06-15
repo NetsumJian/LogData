@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="haofei-hbase-test:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/haofei_hbase_test_jar</output-path>
+    <root id="archive" name="haofei-hbase-test.jar">
+      <element id="module-output" name="haofei-hbase-test" />
+    </root>
+  </artifact>
+</component>
