@@ -12,5 +12,27 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
+    <data-source name="haofei" uuid="186bc4ed-884e-4134-b559-d4d0f655f1ea">
+      <database-info product="Apache Hive" version="1.2.0" jdbc-version="3.0" driver-name="Hive JDBC" driver-version="1.2.0" dbms="HIVE" exact-version="1.2.0" exact-driver-version="1.2" />
+      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>root</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="schema" negative="1" />
+        </introspection-scope>
+      </schema-mapping>
+    </data-source>
+    <data-source name="@47.115.116.119" uuid="b9396215-7b41-43e6-a09e-f9b2716a6fa6">
+      <database-info product="Apache Hive" version="1.2.0" jdbc-version="3.0" driver-name="Hive JDBC" driver-version="1.2.0" dbms="HIVE" exact-version="1.2.0" exact-driver-version="1.2" />
+      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>root</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="schema" qname="default" />
+        </introspection-scope>
+      </schema-mapping>
+    </data-source>
   </component>
 </project>

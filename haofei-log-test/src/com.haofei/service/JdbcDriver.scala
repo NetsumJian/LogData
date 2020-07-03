@@ -3,6 +3,7 @@ package com.haofei.service
 import java.net.URLDecoder
 import java.text.SimpleDateFormat
 
+import com.haofei.domain.SXGFDataSource
 import com.haofei.utils.{AuthDataSource, C3P0Util, MysqlUtil}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.storage.StorageLevel
@@ -15,7 +16,7 @@ object JdbcDriver {
 
     val path = "D:\\Document\\TestData\\tslog_9.20200414.01"
     val dataBase = "data_tslog"
-    val map = MysqlUtil.getTableMap(dataBase)
+    val map = MysqlUtil.getTableMap(dataBase,SXGFDataSource)
 
     val data = sc.textFile(path)
     // data.saveAsTextFile("hdfs://test01:9000/data_tslog/reporttime="+nowday+"/"+System.currentTimeMillis())

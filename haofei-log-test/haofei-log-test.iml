@@ -10,5 +10,6 @@
     <orderEntry type="library" name="scala-sdk-2.11.7" level="application" />
     <orderEntry type="library" name="sparkjars" level="project" />
     <orderEntry type="library" name="utillib" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>

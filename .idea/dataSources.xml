@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="hive119" uuid="00a39eed-185d-4a34-b44b-c249ddcbc2a4">
+    <data-source source="LOCAL" name="hive119" group="root" uuid="00a39eed-185d-4a34-b44b-c249ddcbc2a4">
+      <driver-ref>hive</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.apache.hive.jdbc.HiveDriver</jdbc-driver>
+      <jdbc-url>jdbc:hive2://47.115.116.119:10000</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="haofei" group="root" uuid="186bc4ed-884e-4134-b559-d4d0f655f1ea">
+      <driver-ref>hive</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.apache.hive.jdbc.HiveDriver</jdbc-driver>
+      <jdbc-url>jdbc:hive2://192.168.1.232:10000</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="@47.115.116.119" uuid="b9396215-7b41-43e6-a09e-f9b2716a6fa6">
       <driver-ref>hive</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.apache.hive.jdbc.HiveDriver</jdbc-driver>

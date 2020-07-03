@@ -3,7 +3,7 @@ package com.haofei.service
 import java.text.SimpleDateFormat
 
 import com.haofei.domain.{LocalDataSource, SXGFDataSource, SXQDDataSource, TTGFDataSource, TTQDDataSource, TestDataSource}
-import com.haofei.utils.{MysqlUtil2, RddUtil}
+import com.haofei.utils.{MysqlUtil, RddUtil}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
@@ -25,11 +25,11 @@ object MysqlDriver2 {
     val sxqdTopic = Map("sxqd_tslog" -> 3)
     val sxqdSource = KafkaUtils.createStream(ssc, zkHosts, "test", sxqdTopic).map(_._2)
 
-    val sxqdMap = MysqlUtil2.getTableMap("data_tslog",TestDataSource)
+    val sxqdMap = MysqlUtil.getTableMap("data_tslog",TestDataSource)
 
     sxqdSource.foreachRDD { rdd =>
       val sqldata = RddUtil.rddToSql(rdd,sxqdMap)
-      MysqlUtil2.saveToMysql(sqldata.collect,TestDataSource)
+      MysqlUtil.saveToMysql(sqldata.collect,TestDataSource)
       println(sdf.format(System.currentTimeMillis)+"|sxqd_tslog|"+sqldata.count)
     }
 
@@ -37,11 +37,11 @@ object MysqlDriver2 {
     val sxgfTopic = Map("sxgf_tslog" -> 3)
     val sxgfSource = KafkaUtils.createStream(ssc, zkHosts, "local", sxgfTopic).map(_._2)
 
-    val sxgfMap = MysqlUtil2.getTableMap("data_tslog",LocalDataSource)
+    val sxgfMap = MysqlUtil.getTableMap("data_tslog",LocalDataSource)
 
     sxgfSource.foreachRDD { rdd =>
       val sqldata = RddUtil.rddToSql(rdd,sxgfMap)
-      MysqlUtil2.saveToMysql(sqldata.collect,LocalDataSource)
+      MysqlUtil.saveToMysql(sqldata.collect,LocalDataSource)
       println(sdf.format(System.currentTimeMillis)+"|sxgf_tslog|"+sqldata.count)
     }
 /*
